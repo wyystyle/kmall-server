@@ -26,7 +26,13 @@ app.use((req,res,next)=>{
     res.append("Access-Control-Allow-Headers", "Content-Type, X-Requested-With"); 
     next();
 })
-
+app.use((req,res,next)=>{
+    if(req.method == 'POSTIONS'){
+        res.send('ok')
+    }else{
+        next()
+    }
+})
 
 
 
@@ -55,6 +61,8 @@ app.use((req,res,next)=>{
 	req.userInfo  = req.session.userInfo || {};
 
 	next();	
+    console.log('use',req.userInfo)
+    console.log('session::',req.session.userInfo)
 })
 
 

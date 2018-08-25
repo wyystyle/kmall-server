@@ -55,6 +55,28 @@ router.post("/login",(req,res)=>{
 	})
 })
 
+router.use((req,res,next)=>{
+	if(req.userInfo.isAdmin){
+		next()
+	}else{
+		res.send({
+			code:10
+		})	
+	}
+	
+})
+router.get('/count',(req,res)=>{
+	let result = {
+		code : 0,
+		message:'',
+		data:{
+			usernum:555,
+			ordernum:666,
+			productnum:777
+		}
+	}
+	res.json(result)
+})
 
 
 
