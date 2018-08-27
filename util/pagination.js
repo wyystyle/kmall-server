@@ -25,7 +25,7 @@ function pagination(options){
 		if(page<=0){
 			page = 1
 		}
-		let limit = 3;
+		let limit = 8;
 		options.model.estimatedDocumentCount(options.query)
 		.then((count)=>{
 			let pages = Math.ceil(count / limit);
@@ -35,11 +35,6 @@ function pagination(options){
 			if(pages == 0){
 				page = 1;
 			}
-			let list = [];
-			for(let i=1; i<=pages;i++){
-				list.push(i);
-			}
-
 
 		let skip = (page-1)*limit;	
 
@@ -61,10 +56,11 @@ function pagination(options){
 
 			 	resolve({
 
-			 		docs:docs,
-			 		page:page,
-			 		list:list,
-			 		pages:pages
+			 		list:docs,
+			 		current:page*1,
+			 		pages:pages,
+			 		pageSize:limit,
+			 		total:count
 
 			 	})
 			 })

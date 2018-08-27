@@ -11,10 +11,52 @@ router.use((req,res,next)=>{
 	if(req.userInfo.isAdmin){
 		next()
 	}else{
-		res.send('<h1>请用管理员账号登录</h1>')	
+		res.send({
+			code:10
+		})	
 	}
 	
 })
+
+
+router.post("/",(req,res)=>{
+	let body = req.body;
+	CategoryModel
+		.findOne({name:body.name,pid:body.pid})
+		.then((cate)=>{
+			if(cate){//提示错误信息
+				res.json({
+					code:1,
+					message:"添加失败，分类已存在"
+				})
+			}else{
+				new CategoryModel({
+					name:body.name,
+					pid:body.pid
+				})
+				.save()
+				.then((newCate)=>{
+					if(newCate){
+						res.json({
+							code:0
+						})
+					}
+
+				})
+				.catch((e)=>{
+					res.json({
+						code:1,
+						message:"添加失败，服务器数据错误"						
+					})
+				})
+			}
+		})
+	
+	})
+
+
+
+
 router.get("/",(req,res)=>{
 	/*CategoryModel
 	.find()
@@ -48,7 +90,7 @@ router.get("/",(req,res)=>{
 			})
 		})		
 });
-router.get("/add",(req,res)=>{
+/*router.post("/add",(req,res)=>{
 
 		res.render('admin/category_add_edit',{
 			userInfo:req.userInfo
@@ -92,7 +134,7 @@ router.post("/add",(req,res)=>{
 			}
 		})
 	
-	})
+	})*/
 
 router.get("/edit/:id",(req,res)=>{
 

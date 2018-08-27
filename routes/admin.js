@@ -77,6 +77,30 @@ router.get('/count',(req,res)=>{
 	}
 	res.json(result)
 })
+router.get("/users",(req,res)=>{
+
+	let options={
+		page:req.query.page,
+		model:UserModel,
+		query:{},
+		projection:'',
+		sort:{_id:1}
+	}
+	pagination(options)
+		.then((result)=>{
+			res.json({
+				code:0,
+				data:{
+					current:result.current,
+					total:result.total,
+					pageSize:result.pageSize,					
+					list:result.list
+				}	
+			})
+		})
+})
+
+
 
 
 
@@ -89,39 +113,7 @@ router.get('/count',(req,res)=>{
 	}
 	
 })*/
-router.get("/",(req,res)=>{
 
-		res.render('admin/index',{
-			userInfo:req.userInfo
-		});
-	});
-router.get("/users",(req,res)=>{
-
-	
-
-	let options={
-		page:req.query.page,
-		model:UserModel,
-		query:{},
-		projection:'_id username isAdmin',
-		sort:{_id:1}
-	}
-
-
-
-	pagination(options)
-		.then((data)=>{
-			res.render('admin/user_list',{
-				userInfo:req.userInfo,
-				users:data.docs,
-				page:data.page,
-				list:data.list,
-				url:'/admin/users',
-				pages:data.pages
-			
-			})
-		})
-})
 
 router.post('/uploadImages',upload.single('upload'),(req,res)=>{
 	let path = "/uploads/"+req.file.filename;

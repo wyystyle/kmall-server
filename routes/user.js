@@ -4,7 +4,22 @@ const UserModel = require('../models/user.js');
 const hmac = require('../util/hmac.js')
 
 
-
+/*router.get('/init',(req,res)=>{
+	const users =[];
+	for(let i=0;i<100;i++){
+		users.push({
+			username:'test'+i,
+			password:hmac('test'+i),
+			isAdmin:false,
+			phone:'18864628'+i,
+			email:'test'+i+'@baidu.com'
+		})
+	}
+	UserModel.create(users)
+	.then((result)=>{
+		res.send('ok')
+	})
+})*/
 
 router.post("/register",(req,res)=>{
 	let body = req.body;

@@ -18,7 +18,7 @@ db.on('error',(err)=>{
 db.once('open',()=>{
 	console.log('DB connected....');
 });
-
+//跨域请求设置
 app.use((req,res,next)=>{
     res.append("Access-Control-Allow-Origin","http://localhost:8080");
     res.append("Access-Control-Allow-Credentials",true);
@@ -61,8 +61,7 @@ app.use((req,res,next)=>{
 	req.userInfo  = req.session.userInfo || {};
 
 	next();	
-    console.log('use',req.userInfo)
-    console.log('session::',req.session.userInfo)
+
 })
 
 
@@ -73,11 +72,11 @@ app.use(bodyParser.json())
 
 //加载动态请求
 app.use('/admin',require('./routes/admin.js'));
-
-
-app.use('/',require('./routes/index.js'));
 app.use('/user',require('./routes/user.js'));
 app.use('/category',require('./routes/category.js'));
+app.use('/',require('./routes/index.js'));
+
+
 app.use('/article',require('./routes/article.js'));
 app.use("/comment",require('./routes/comment.js'));
 app.use('/resource',require('./routes/resource.js'));

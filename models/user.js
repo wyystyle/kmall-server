@@ -14,8 +14,16 @@ const UserSchema = new mongoose.Schema({
   isAdmin:{
   	type:Boolean,
   	default:true//默认是普通用户
-  }
+  },
+  email:{
+    type:String
+  },
+  phone:{
+    type:String
+  },
 
+},{
+  timestamps:true
 });
 
 
