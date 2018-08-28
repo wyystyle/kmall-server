@@ -37,9 +37,19 @@ router.post("/",(req,res)=>{
 				.save()
 				.then((newCate)=>{
 					if(newCate){
-						res.json({
-							code:0
-						})
+						if(body.pid==0){
+							CategoryModel.find({pid:0},"_id neme")
+							.then((data)=>{
+									res.json({
+										code:0,
+										data:data
+									})
+							})
+						}else{
+							res.json({
+								code:0
+							})
+						}
 					}
 
 				})
@@ -54,42 +64,46 @@ router.post("/",(req,res)=>{
 	
 	})
 
-
-
-
 router.get("/",(req,res)=>{
-	/*CategoryModel
-	.find()
-	.then((user)=>{
 
-		res.render('admin/category_list',{
-			userInfo:req.userInfo,
-			users:user,
-		});
-	})*/
-	let options={
-		page:req.query.page,
-		model:CategoryModel,
-		query:{},
-		projection:'_id name order',
-		sort:{order:1}
-	}
-
-
-
-	pagination(options)
-		.then((data)=>{
-			res.render('admin/category_list',{
-				userInfo:req.userInfo,
-				categories:data.docs,
-				page:data.page,
-				list:data.list,
-				url:'/category',
-				pages:data.pages
-			
+	let pid = req.query.pid;
+	let page = req.query.page;
+	// console.log(id)
+	if(page){
+		CategoryModel
+		.getPaginationCategories(page,{pid:pid})
+		.then((result)=>{
+			res.json({
+				code:0,
+				data:{
+					current:result.current,
+					total:result.total,
+					pageSize:result.pageSize,
+					list:result.list					
+				}
+			})	
+		})
+	}else{
+		CategoryModel.find({pid:pid},"_id name pid order")
+			.then((category)=>{
+				
+					res.json({
+						code:0,
+						data:category
+					})		
 			})
-		})		
+			.catch(e=>{
+				message:"获取分类失败，服务器数据错误"	
+		})
+	}	
 });
+
+
+
+
+
+
+
 /*router.post("/add",(req,res)=>{
 
 		res.render('admin/category_add_edit',{
