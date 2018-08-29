@@ -73,6 +73,7 @@ router.get("/",(req,res)=>{
 		CategoryModel
 		.getPaginationCategories(page,{pid:pid})
 		.then((result)=>{
+			console.log(result)
 			res.json({
 				code:0,
 				data:{
@@ -85,11 +86,11 @@ router.get("/",(req,res)=>{
 		})
 	}else{
 		CategoryModel.find({pid:pid},"_id name pid order")
-			.then((category)=>{
+			.then((categories)=>{
 				
 					res.json({
 						code:0,
-						data:category
+						data:categories
 					})		
 			})
 			.catch(e=>{

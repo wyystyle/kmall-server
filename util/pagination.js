@@ -58,7 +58,6 @@ function pagination(options){
 
 			 		list:docs,
 			 		current:page*1,
-			 		pages:pages,
 			 		pageSize:limit,
 			 		total:count
 
