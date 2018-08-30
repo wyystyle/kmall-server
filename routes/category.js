@@ -73,7 +73,6 @@ router.get("/",(req,res)=>{
 		CategoryModel
 		.getPaginationCategories(page,{pid:pid})
 		.then((result)=>{
-			console.log(result)
 			res.json({
 				code:0,
 				data:{
@@ -87,7 +86,6 @@ router.get("/",(req,res)=>{
 	}else{
 		CategoryModel.find({pid:pid},"_id name pid order")
 			.then((categories)=>{
-				
 					res.json({
 						code:0,
 						data:categories
@@ -97,6 +95,80 @@ router.get("/",(req,res)=>{
 				message:"获取分类失败，服务器数据错误"	
 		})
 	}	
+});
+router.put("/updateName",(req,res)=>{
+	let body = req.body;
+	CategoryModel
+		.findOne({_id:body.id,pid:body.pid,name:body.name})
+		.then((cate)=>{
+			if(cate){//提示错误信息
+				res.json({
+					code:1,
+					message:"分类已存在，从新分类"
+				})
+			}else{
+				CategoryModel
+				.update({_id:body.id},{name:body.name})
+				.then((cate)=>{
+					if(cate){
+						CategoryModel
+						.getPaginationCategories(body.page,{pid:body.pid})
+						.then((result)=>{
+							res.json({
+								code:0,
+								data:{
+									current:result.current,
+									total:result.total,
+									pageSize:result.pageSize,
+									list:result.list					
+								}
+							})	
+						})
+					}else{
+						res.json({
+						code:1,
+						message:"更新失败，服务器数据错误"						
+					})
+				}
+			})
+			.catch((e)=>{
+				res.json({
+					code:1,
+					message:"添加失败，服务器数据错误"						
+				})
+			})
+		}
+	})
+
+});
+router.put("/updateOrder",(req,res)=>{
+	let body = req.body;
+	console.log(body)
+		CategoryModel
+		.update({_id:body.id},{order:body.order})
+		.then((cate)=>{
+			if(cate){
+				CategoryModel
+				.getPaginationCategories(body.page,{pid:body.pid})
+				.then((result)=>{
+					res.json({
+						code:0,
+						data:{
+							current:result.current,
+							total:result.total,
+							pageSize:result.pageSize,
+							list:result.list					
+						}
+					})	
+				})
+			}else{
+				res.json({
+				code:1,
+				message:"更新排序失败，服务器数据错误"						
+			})
+		}
+	})	
+
 });
 
 
