@@ -23,9 +23,13 @@ app.use((req,res,next)=>{
     res.append("Access-Control-Allow-Origin","http://localhost:8080");
     res.append("Access-Control-Allow-Credentials",true);
     res.append("Access-Control-Allow-Methods","GET, POST, PUT,DELETE");
-    res.append("Access-Control-Allow-Headers", "Content-Type, X-Requested-With"); 
+    res.append("Access-Control-Allow-Headers", "Content-Type, X-Requested-With,X-File-Name"); 
     next();
 })
+//加载静态
+app.use(express.static('public'));
+
+
 app.use((req,res,next)=>{
     if(req.method == 'POSTIONS'){
         res.send('ok')
@@ -33,11 +37,6 @@ app.use((req,res,next)=>{
         next()
     }
 })
-
-
-
-//加载静态
-app.use(express.static('public'));
 
 app.use(session({
     //设置cookie名称
@@ -75,7 +74,7 @@ app.use('/admin',require('./routes/admin.js'));
 app.use('/user',require('./routes/user.js'));
 app.use('/category',require('./routes/category.js'));
 app.use('/',require('./routes/index.js'));
-
+app.use('/product',require('./routes/product.js'));
 
 app.use('/article',require('./routes/article.js'));
 app.use("/comment",require('./routes/comment.js'));
