@@ -223,7 +223,7 @@ router.post("/add",(req,res)=>{
 	
 	})*/
 
-router.get("/edit/:id",(req,res)=>{
+/*router.get("/edit/:id",(req,res)=>{
 
 	let id = req.params.id;
 	// console.log(id)
@@ -288,5 +288,5 @@ router.get("/delete/:id",(req,res)=>{
 			}
 		})
 			
-	});
+	});*/
 module.exports = router;
