@@ -132,7 +132,6 @@ router.put("/updateOrder",(req,res)=>{
 });
 router.put("/updateStates",(req,res)=>{
 	let body = req.body;
-	console.log(body)
 		ProductModel
 		.update({_id:body.id},{states:body.states})
 		.then((cate)=>{
@@ -142,7 +141,8 @@ router.put("/updateStates",(req,res)=>{
 				.then((result)=>{
 					res.json({
 						code:0,
-						message:'更新成功',
+						states:result.states,
+						message:'更新成功'
 					})	
 				})
 			}else{
