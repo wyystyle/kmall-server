@@ -25,7 +25,7 @@ function pagination(options){
 		if(page<=0){
 			page = 1
 		}
-		let limit = 8;
+		let limit = 3;
 		options.model.countDocuments(options.query)
 		.then((count)=>{
 			let pages = Math.ceil(count / limit);

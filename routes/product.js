@@ -69,7 +69,6 @@ router.post("/save",(req,res)=>{
 							shopnum:newProduct.shopnum,
 							name:newProduct.name,
 							details:newProduct.details,
-
 							current:result.current,
 							total:result.total,
 							pageSize:result.pageSize,
@@ -78,6 +77,32 @@ router.post("/save",(req,res)=>{
 					})	
 				})
 			}
+		})
+	})
+router.put("/save",(req,res)=>{
+	let body = req.body;
+		let update = {
+			Sketch:body.Sketch,
+			images:body.images,
+			price:body.price,
+			shopnum:body.shopnum,
+			name:body.name,
+			details:body.details,
+			CategoryId:body.categoryId
+		}
+		ProductModel
+		.update({_id:body.id},update)
+		.then((raw)=>{
+			res.json({
+				code:0,
+				message:"编辑成功",
+			})
+		})
+		.catch((e)=>{
+			res.json({
+				code:1,
+				message:"更新失败，服务器数据错误"						
+			})
 		})
 	})
 
@@ -182,7 +207,28 @@ router.get("/edit",(req,res)=>{
 			});	
 	});
 
-
+router.get("/search",(req,res)=>{
+	let keyword = req.query.keyword;
+	let page = req.query.page;
+	// console.log(id)
+		ProductModel
+		.getPaginationProducts(page,{name:
+			{$regex:new RegExp(keyword,'i')}
+		})
+		.then((result)=>{
+			res.json({
+				code:0,
+				message:'获取成功',
+				data:{
+					keyword:keyword,
+					current:result.current,
+					total:result.total,
+					pageSize:result.pageSize,
+					list:result.list			
+				}
+			})	
+		})
+});
 
 
 
