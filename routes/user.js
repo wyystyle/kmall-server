@@ -33,20 +33,22 @@ router.post("/register",(req,res)=>{
 	.findOne({username:body.username})
 	.then((user)=>{
 		if(user){//已经有该用户
-			 result.code = 10;
+			 result.code = 1;
 			 result.message = '用户已存在'
 			 res.json(result);
 		}else{
 			//插入数据到数据库
 			new UserModel({
 				username:body.username,
-				password:hmac(body.password)
+				password:hmac(body.password),
+				email:body.email,
+				phone:body.phone
 			})
 			.save((err,newUser)=>{
 				if(!err){//插入成功
 					res.json(result)
 				}else{
-					result.code = 10;
+					result.code = 1;
 					result.message = '注册失败'
 					res.json(result);					
 				}
@@ -65,7 +67,7 @@ router.post("/login",(req,res)=>{
 	}
 
 	UserModel
-	.findOne({username:body.username,password:hmac(body.password)})
+	.findOne({username:body.username,password:hmac(body.password),isAdmin:false})
 	.then((user)=>{
 		if(user){//已经有该用户
 			/* result.data={
@@ -83,10 +85,28 @@ router.post("/login",(req,res)=>{
 			 res.json(result)
 		}else{
 			//插入数据到数据库
-			result.code=10;
+			result.code=1;
 			result.message = "用户名和密码错误";
 			res.json(result);
 			
+		}
+	})
+
+})
+router.get("/checkUsername",(req,res)=>{
+	let username = req.query.username
+	UserModel
+	.findOne({username:username})
+	.then((user)=>{
+		if(user){//已经有该用户
+			 res.json({
+			 	code:1,
+			 	message:'用户名已存在'
+			 });
+		}else{
+			 res.json({
+			 	code:0
+			 })
 		}
 	})
 
@@ -104,6 +124,64 @@ router.get('/logout',(req,res)=>{
 	res.json(result);
 
 })
+/*router.use((req,res,next)=>{
+	if(req.userInfo._id){
+		res.json({
+			code:0
+		})
+		next()
+	}else{
+		res.json({
+			code:10
+		});
+	}
+})*/
+router.get('/userInfo',(req,res)=>{
+	if(req.userInfo._id){
+		res.json({
+			code:0,
+			data:req.userInfo
+		})
+	}else{
+		res.json({
+			code:1
+		})
+	}
 
+});
+router.get('/userConent',(req,res)=>{
+	if(req.userInfo._id){
+		UserModel
+		.findById(req.userInfo._id,"username phone email")
+		.then((user)=>{
+			if(user){
+				res.json({
+					code:0,
+					data:user
+				})
+			}else{
+				res.json({
+					code:1
+				})
+			}
+		})
+	}
+
+})
+router.put("/updatePassword",(req,res)=>{
+	UserModel.update({_id:req.userInfo._id},{password:hmac(req.body.password)})
+	.then(raw=>{
+		res.json({
+			code:0,
+			message:'更新密码成功'
+		})
+	})
+	.catch(e=>{
+		res.json({
+			code:1,
+			message:'更新密码失败'
+		})
+	})
+})
 
 module.exports = router;
