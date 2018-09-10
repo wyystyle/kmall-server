@@ -1,7 +1,8 @@
 const Router = require('express').Router;
 const router = Router();
 const UserModel = require('../models/user.js');
-const hmac = require('../util/hmac.js')
+const hmac = require('../util/hmac.js');
+const ProductModel = require('../models/product.js');
 
 
 /*router.get('/init',(req,res)=>{
@@ -124,6 +125,44 @@ router.get('/logout',(req,res)=>{
 	res.json(result);
 
 })
+router.get('/productList',(req,res)=>{
+	let page = req.query.page;
+	let query = {states:0};
+	if(req.query.catergoryId){
+		query.catergoryId=req.query.catergoryId
+	}else{
+		query.name={$regex:new RegExp(req.query.keyword,'i')}
+	}
+	let projection='_id name price images';
+	let sort={order:-1};
+	if(req.query.orderBy == 'price_asc'){
+		sort={order:-1}		
+	}else{
+		sort={order:1}
+	}
+	ProductModel
+			.getPaginationProducts(page,query,projection,sort)
+			.then((result)=>{
+				res.json({
+					code:0,
+					data:{
+						current:result.current,
+						total:result.total,
+						pageSize:result.pageSize,
+						list:result.list					
+					}
+				})	
+			})
+			.catch((e)=>{
+				res.json({
+					code:1,
+					message:"获取数据失败"						
+				})
+			})
+
+	})
+
+
 /*router.use((req,res,next)=>{
 	if(req.userInfo._id){
 		res.json({
