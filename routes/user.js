@@ -136,9 +136,9 @@ router.get('/productList',(req,res)=>{
 	let projection='_id name price images';
 	let sort={order:-1};
 	if(req.query.orderBy == 'price_asc'){
-		sort={order:-1}		
+		sort={shopnum:-1}		
 	}else{
-		sort={order:1}
+		sort={shopnum:1}
 	}
 	ProductModel
 			.getPaginationProducts(page,query,projection,sort)
@@ -161,6 +161,23 @@ router.get('/productList',(req,res)=>{
 			})
 
 	})
+router.get('/productDetail',(req,res)=>{
+	ProductModel
+	.findOne({_id:req.query.productId,states:0},"-__v -createdAt -updatedAt -CategoryId")
+	.then((product)=>{
+		console.log(product)
+		res.json({
+			code:0,
+			data:product
+		})
+	})
+	.catch((e)=>{
+		res.json({
+			code:1,
+			message:"获取商品详情失败"
+		})
+	})
+})
 
 
 /*router.use((req,res,next)=>{

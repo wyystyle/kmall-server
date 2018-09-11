@@ -75,6 +75,7 @@ app.use('/user',require('./routes/user.js'));
 app.use('/category',require('./routes/category.js'));
 app.use('/',require('./routes/index.js'));
 app.use('/product',require('./routes/product.js'));
+app.use('/cart',require('./routes/cart.js'));
 
 app.use('/article',require('./routes/article.js'));
 app.use("/comment",require('./routes/comment.js'));

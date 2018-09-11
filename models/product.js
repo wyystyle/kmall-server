@@ -39,7 +39,7 @@ const ProductSchema = new mongoose.Schema({
 },{
 	timestamps:true
 });
-ProductSchema.statics.getPaginationProducts = function(page,query={},projection='name price _id order states',sort={order:-1}){
+ProductSchema.statics.getPaginationProducts = function(page,query={},projection='name price _id order states',sort={shopnum:-1}){
     return new Promise((resolve,reject)=>{
       let options = {
         page: page,//需要显示的页码
