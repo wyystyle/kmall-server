@@ -3,8 +3,8 @@ const ProductModel = require('./product.js');
 const mongoose = require('mongoose');
 const CartItemSchema = new mongoose.Schema({
   product:{
-    type:mongoose.Schema.Type.ObjectId,
-    ref:'product'
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'Product'
   },
   count:{
     type:Number,
@@ -74,7 +74,26 @@ UserSchema.methods.getCart = function(){
             return cartItem
           })
     })
-    
+    Promise.all(getCartItem)
+    .then(cartItems=>{
+      let totalCartPrice = 0;
+        cartItems.forEach(item=>{
+          if(item.checked){
+            totalCartPrice += item.totalPrice;
+          }
+        })
+        this.cart.totalCartPrice = totalCartPrice;
+        this.cart.cartList = cartItems;
+        let hasNotCheckedItem = cartItems.find((item)=>{
+          return item.checked == false;
+        })
+        if(hasNotCheckedItem){
+          this.cart.allChecked = false;
+        }else{
+          this.cart.allChecked = true;
+        }
+        resolve(this.cart)
+    })
     
   })
 }

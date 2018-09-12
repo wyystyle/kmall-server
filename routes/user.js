@@ -165,7 +165,6 @@ router.get('/productDetail',(req,res)=>{
 	ProductModel
 	.findOne({_id:req.query.productId,states:0},"-__v -createdAt -updatedAt -CategoryId")
 	.then((product)=>{
-		console.log(product)
 		res.json({
 			code:0,
 			data:product
