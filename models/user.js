@@ -98,6 +98,42 @@ UserSchema.methods.getCart = function(){
   })
 }
 
+UserSchema.methods.getOrderProduct = function(){
+  return new Promise((resolve,reject)=>{
+    if(!this.cart){
+      resolve({
+        cartList:[]
+      })
+    }
+    let checkedList = this.cart.cartList.filter(cartItem=>{
+      return cartItem.checked;
+    })
+    let getCartItem = this.cart.checkedList.map(cartItem=>{
+      return ProductModel
+          .findById(cartItem.product,"name shopnum price images _id")
+          .then(product=>{
+            cartItem.product = product;
+            cartItem.totalPrice =  product.price * cartItem.count;
+            return cartItem
+          })
+    })
+    Promise.all(getCartItem)
+    .then(cartItems=>{
+      let totalCartPrice = 0;
+        cartItems.forEach(item=>{
+          if(item.checked){
+            totalCartPrice += item.totalPrice;
+          }
+        })
+        this.cart.totalCartPrice = totalCartPrice;
+        this.cart.cartList = cartItems;
+        resolve(this.cart)
+    })
+    
+  })
+}
+
+
 
 const UserModel = mongoose.model('User', UserSchema);
 
