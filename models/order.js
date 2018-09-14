@@ -1,10 +1,19 @@
 //数据模板
 const ProductModel = require('./product.js');
 const mongoose = require('mongoose');
-const CartItemSchema = new mongoose.Schema({
+const ProductSchema = new mongoose.Schema({
   product:{
     type:mongoose.Schema.Types.ObjectId,
     ref:'Product'
+  },
+  price:{
+    type:Number
+  },
+  name:{
+    type:String
+  },
+  images:{
+    type:String
   },
   count:{
     type:Number,
@@ -13,27 +22,14 @@ const CartItemSchema = new mongoose.Schema({
   totalPrice:{
     type:Number,
     default:0
-  },
-  checked:{
-    type:Boolean,
-    default:true
   }
 });
 
-const CartSchema = new mongoose.Schema({
-  cartList:{
-    type:[CartItemSchema]
+
+const ShippingSchema = new mongoose.Schema({
+  shippingId:{
+    type:String
   },
-  allChecked:{
-    type:Boolean,
-    default:true
-  },
-  totalCartPrice:{
-    type:Number,
-    default:0
-  }
-})	
-const shippingSchema = new mongoose.Schema({
   name:{
     type:String
   },
@@ -54,34 +50,53 @@ const shippingSchema = new mongoose.Schema({
   }
 })    	
 
-const UserSchema = new mongoose.Schema({
-
-  username:{
+const OrderSchema = new mongoose.Schema({
+  user:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'User'
+  },
+  orderNo:{
   	type:String
   },
-  password:{
-  	type:String
+  //支付金额
+  payment:{
+  	type:Number
   },
-  isAdmin:{
-  	type:Boolean,
-  	default:true//默认是普通用户
+  paymentType:{
+  	type:String,
+    enum:["10","20"], //10代表支付宝 20微信
+    default:"10"
   },
-  email:{
-    type:String
+  paymentTypeDesc:{
+    type:String,
+    enum:["支付宝","微信"],
+    default:"支付宝"
   },
-  phone:{
-    type:String
+  paymentTime:{
+    type:Date
   },
-  cart:{
-    type:CartSchema
+  status:{
+    type:String,
+    enum:["10","20","30","40","50"],//10未支付 20 取消 30 已支付 40 已发货 50 完成
+    default:"10"
   },
+  statusDesc:{
+    type:String,
+    enum:["未支付","取消","已支付","已发货","完成"],//10未支付 20 取消 30 已支付 40 已发货 50 完成
+    default:"未支付"
+  },
+  //配送信息
   shipping:{
-    type:[shippingSchema]
-  }
+    type:ShippingSchema
+  },
+  //商品信息
+  productList:{
+    type:[ProductSchema]
+  },
 },{
   timestamps:true
 });
-UserSchema.methods.getCart = function(){
+OrderSchema.methods.getOrderProductList = function(){
   return new Promise((resolve,reject)=>{
     if(!this.cart){
       resolve({
@@ -121,7 +136,7 @@ UserSchema.methods.getCart = function(){
   })
 }
 
-UserSchema.methods.getOrderProduct = function(){
+OrderSchema.methods.getOrderProduct = function(){
   return new Promise((resolve,reject)=>{
     if(!this.cart){
       resolve({
@@ -158,6 +173,6 @@ UserSchema.methods.getOrderProduct = function(){
 
 
 
-const UserModel = mongoose.model('User', UserSchema);
+const OrderModel = mongoose.model('Order', OrderSchema);
 
-module.exports = UserModel;
+module.exports = OrderModel;
