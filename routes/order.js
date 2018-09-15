@@ -28,9 +28,8 @@ router.post('/',(req,res)=>{
 	UserModel.findById(req.userInfo._id)
 		.then((user)=>{
 			let order = {};
-			user.getOrderProductList()
+			user.getCart()
 			.then(result=>{
-
 				order.payment = result.totalCartPrice;
 				let productList = [];
 				result.cartList.forEach(item=>{
@@ -45,7 +44,7 @@ router.post('/',(req,res)=>{
 				})
 				order.productList = productList;
 				//地址信息
-				let shipping = user.shipping.id(req,body.shippingId);
+				let shipping = user.shipping.id(req.body.shippingId);
 				order.shipping = {
 					shippingId:shipping._id,
 					name:shipping.name,
@@ -55,15 +54,25 @@ router.post('/',(req,res)=>{
 					phone:shipping.phone,
 					zip:shipping.zip
 				}
-				order.orderNo = Date.noe().toString()+parseInt(Math.random()*10000);
+				order.orderNo = Date.now().toString()+parseInt(Math.random()*10000);
 				order.user = user._id;
 
 				new OrderModel(order)
 				.save()
 				.then(newOrder=>{
-					res.json({
-						code:0,
-						data:newOrder	
+					UserModel.findById(req.userInfo._id)
+					.then(userUser=>{
+						let newCartList = user.cart.cartList.filter(item=>{
+							return item.checked == false;
+						})
+						user.cart.cartList = newCartList;
+					})
+					user.save()
+					.then(newUser=>{
+						res.json({
+							code:0,
+							data:newOrder	
+						})
 					})
 				})
 			})
@@ -73,8 +82,29 @@ router.post('/',(req,res)=>{
 				coed:1,
 				message:'获取订单失败'
 			})
-		})	
-
+		})
 })
+router.get('/list',(req,res)=>{
+	let page = req.query.page;
+	let query = {user:req.userInfo._id}; 
+	console.log(query)
+	let projection = "-__v";
+	let sort = {_id:-1};
+	OrderModel
+		.getPaginationProducts(page,query,projection,sort)
+		.then((result)=>{
+			console.log(result)
+			res.json({
+				code:0,
+				message:'获取成功',
+				data:{
+					current:result.current,
+					total:result.total,
+					pageSize:result.pageSize,
+					list:result.list			
+				}
+			})	
+		})
 
+})	
 module.exports = router;

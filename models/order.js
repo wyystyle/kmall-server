@@ -1,6 +1,7 @@
 //数据模板
 const ProductModel = require('./product.js');
 const mongoose = require('mongoose');
+const pagination = require('../util/pagination.js');
 const ProductSchema = new mongoose.Schema({
   product:{
     type:mongoose.Schema.Types.ObjectId,
@@ -96,7 +97,25 @@ const OrderSchema = new mongoose.Schema({
 },{
   timestamps:true
 });
-OrderSchema.methods.getOrderProductList = function(){
+
+
+OrderSchema.statics.getPaginationProducts = function(page,query={},projection="",sort={_id:-1}){
+    return new Promise((resolve,reject)=>{
+      let options = {
+        page: page,//需要显示的页码
+        model:this, //操作的数据模型
+        query:query, //查询条件
+        projection:projection, //投影，
+        sort:sort //排序
+      }
+
+      pagination(options)
+      .then((data)=>{
+        resolve(data); 
+      })
+    })
+ }
+/*OrderSchema.methods.getOrderProductList = function(){
   return new Promise((resolve,reject)=>{
     if(!this.cart){
       resolve({
@@ -170,7 +189,7 @@ OrderSchema.methods.getOrderProduct = function(){
     
   })
 }
-
+*/
 
 
 const OrderModel = mongoose.model('Order', OrderSchema);
