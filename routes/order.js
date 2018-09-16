@@ -5,6 +5,19 @@ const UserModel = require('../models/user.js');
 const hmac = require('../util/hmac.js');
 const ProductModel = require('../models/product.js');
 router.get('/',(req,res)=>{
+	router.get('/userInfo',(req,res)=>{
+		if(req.userInfo._id){
+			res.json({
+				code:0,
+				data:req.userInfo
+			})
+		}else{
+			res.json({
+				code:1
+			})
+		}
+
+});
 	UserModel.findById(req.userInfo._id)
 		.then((user)=>{
 			user.getCart()
@@ -87,13 +100,11 @@ router.post('/',(req,res)=>{
 router.get('/list',(req,res)=>{
 	let page = req.query.page;
 	let query = {user:req.userInfo._id}; 
-	console.log(query)
 	let projection = "-__v";
 	let sort = {_id:-1};
 	OrderModel
 		.getPaginationProducts(page,query,projection,sort)
 		.then((result)=>{
-			console.log(result)
 			res.json({
 				code:0,
 				message:'获取成功',
@@ -104,6 +115,44 @@ router.get('/list',(req,res)=>{
 					list:result.list			
 				}
 			})	
+		})
+
+})	
+router.get('/detail',(req,res)=>{
+	let orderNo = req.query.orderNo;
+	OrderModel.findOne({orderNo:orderNo,user:req.userInfo._id})
+		.then(order=>{
+			res.json({
+				code:0,
+				data:order
+			})
+		})
+		.catch(e=>{
+			res.json({
+				code:1,
+				message:"获取订单失败"
+			})
+		})
+
+})	
+router.put('/cancel',(req,res)=>{
+	let orderNo = req.body.orderNo;
+	OrderModel.findOneAndUpdate(
+		{orderNo:orderNo,user:req.userInfo._id},
+		{status:'20',statusDesc:"取消"},
+		{new:true}
+		)
+		.then(order=>{
+			res.json({
+				code:0,
+				data:order
+			})
+		})
+		.catch(e=>{
+			res.json({
+				code:1,
+				message:"更新订单失败"
+			})
 		})
 
 })	
