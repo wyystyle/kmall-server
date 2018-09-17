@@ -1,10 +1,11 @@
 const Router = require('express').Router;
 
 const UserModel = require('../models/user.js');
+const ProductModel = require('../models/product.js');
+const OrderModel = require('../models/order.js');
 const pagination = require('../util/pagination.js');
 var multer  = require('multer');
 var upload = multer({ dest: 'public/uploads/' });
-const CommentModel = require('../models/comment.js')
 const hmac = require('../util/hmac.js');
 
 const fs = require('fs');
@@ -66,16 +67,23 @@ router.use((req,res,next)=>{
 	
 })
 router.get('/count',(req,res)=>{
-	let result = {
-		code : 0,
-		message:'',
-		data:{
-			usernum:555,
-			ordernum:666,
-			productnum:777
-		}
-	}
-	res.json(result)
+	UserModel.estimatedDocumentCount()
+	.then(usernum=>{
+		OrderModel.estimatedDocumentCount()
+		.then(ordernum=>{
+			ProductModel.estimatedDocumentCount()
+			.then(productnum=>{
+				res.json({
+					code:0,
+					data:{
+						usernum:usernum,
+						ordernum:ordernum,
+						productnum:productnum
+					}
+				})
+			})
+		})
+	})
 })
 router.get("/users",(req,res)=>{
 

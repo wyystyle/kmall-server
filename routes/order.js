@@ -155,5 +155,78 @@ router.put('/cancel',(req,res)=>{
 			})
 		})
 
+})
+
+router.use((req,res,next)=>{
+	if(req.userInfo.isAdmin){
+		next()
+	}else{
+		res.send({
+			code:10
+		})	
+	}
+	
+})
+router.get('/home/list',(req,res)=>{
+	let page = req.query.page;
+	let query = {}; 
+	let projection = "-__v";
+	let sort = {_id:-1};
+	OrderModel
+		.getPaginationProducts(page,query,projection,sort)
+		.then((result)=>{
+			res.json({
+				code:0,
+				data:{
+					current:result.current,
+					total:result.total,
+					pageSize:result.pageSize,
+					list:result.list			
+				}
+			})	
+		})
+
 })	
+router.get('/home/detail',(req,res)=>{
+	let orderNo = req.query.orderNo;
+	console.log(orderNo)
+	OrderModel.findOne({orderNo:orderNo})
+		.then(order=>{
+			console.log(order)
+			res.json({
+				code:0,
+				data:order
+			})
+		})
+		.catch(e=>{
+			res.json({
+				code:1,
+				message:"获取订单失败"
+			})
+		})
+
+})	
+
+router.get("/home/search",(req,res)=>{
+	let keyword = req.query.keyword;
+	let page = req.query.page;
+	// console.log(id)
+		OrderModel
+		.getPaginationProducts(page,{orderNo:
+			{$regex:new RegExp(keyword,'i')}
+		})
+		.then((result)=>{
+			res.json({
+				code:0,
+				message:'获取成功',
+				data:{
+					keyword:keyword,
+					current:result.current,
+					total:result.total,
+					pageSize:result.pageSize,
+					list:result.list			
+				}
+			})	
+		})
+});	
 module.exports = router;
