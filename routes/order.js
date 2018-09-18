@@ -189,10 +189,8 @@ router.get('/home/list',(req,res)=>{
 })	
 router.get('/home/detail',(req,res)=>{
 	let orderNo = req.query.orderNo;
-	console.log(orderNo)
 	OrderModel.findOne({orderNo:orderNo})
 		.then(order=>{
-			console.log(order)
 			res.json({
 				code:0,
 				data:order
@@ -206,11 +204,11 @@ router.get('/home/detail',(req,res)=>{
 		})
 
 })	
+	
 
 router.get("/home/search",(req,res)=>{
 	let keyword = req.query.keyword;
 	let page = req.query.page;
-	// console.log(id)
 		OrderModel
 		.getPaginationProducts(page,{orderNo:
 			{$regex:new RegExp(keyword,'i')}
@@ -229,4 +227,26 @@ router.get("/home/search",(req,res)=>{
 			})	
 		})
 });	
+router.put('/home/deliver',(req,res)=>{
+	let orderNo = req.body.orderNo;
+	OrderModel.findOneAndUpdate(
+		{orderNo:orderNo},
+		{status:'40',statusDesc:"已发货"},
+		{new:true}
+		)
+		.then(order=>{
+			res.json({
+				code:0,
+				data:order
+			})
+		})
+		.catch(e=>{
+			res.json({
+				code:1,
+				message:"更新订单失败"
+			})
+		})
+
+})
+
 module.exports = router;

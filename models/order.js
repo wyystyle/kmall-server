@@ -3,7 +3,7 @@ const ProductModel = require('./product.js');
 const mongoose = require('mongoose');
 const pagination = require('../util/pagination.js');
 const ProductSchema = new mongoose.Schema({
-  product:{
+  productId:{
     type:mongoose.Schema.Types.ObjectId,
     ref:'Product'
   },
